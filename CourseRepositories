@@ -1,0 +1,45 @@
+package com.example.session03.Models.Repositories;
+
+import com.example.session03.Models.Entities.Course;
+import org.springframework.stereotype.Repository;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public class CourseRepository {
+    private List<Course> courses = new ArrayList<>(
+                    Arrays.asList(
+                            new Course(1, "Java Core", "ACTIVE", 1),
+                            new Course(2, "Spring Boot", "ACTIVE", 1),
+                            new Course(3, "Database", "ACTIVE", 2)
+                    )
+            );
+    public List<Course> findAll() {
+        return courses;
+    }
+    public Optional<Course> findById(long id) {
+        return courses.stream().filter(course -> course.getId() == id).findFirst();
+    }
+    public Course create(Course course) {
+        boolean exists = courses.stream().anyMatch(c -> c.getId() == course.getId());
+        if (exists) {
+            return null;
+        }
+        courses.add(course);
+        return course;
+    }
+    public Course update(long id, Course newCourse) {
+        Course course = findById(id).orElseThrow(() -> new RuntimeException("Không tìm thấy khóa học có id = " + id));
+        course.setTitle(newCourse.getTitle());
+        course.setStatus(newCourse.getStatus());
+        course.setInstructorId(newCourse.getInstructorId());
+        return course;
+    }
+    public Course deleteById(long id) {
+        Course course = findById(id).orElseThrow(() -> new RuntimeException("Không tìm thấy khóa học có id = " + id));
+        courses.remove(course);
+        return course;
+    }
+}
